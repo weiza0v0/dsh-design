@@ -23,14 +23,35 @@ PIDFILE="$STATE_DIR/pid"
 PORTFILE="$STATE_DIR/port"
 
 if [ "$PORT" = "--stop" ]; then
-  if [ -f "$PIDFILE" ]; then
-    PID="$(cat "$PIDFILE")"
-    kill "$PID" 2>/dev/null || true
-    rm -f "$PIDFILE" "$PORTFILE"
-    echo "已请求关闭 (pid $PID)"
-  else
-    echo "没有正在运行的实例"
+  STOPPED=0
+  SEEK_PORT="$(cat "$PORTFILE" 2>/dev/null || true)"
+  [ -n "$SEEK_PORT" ] || SEEK_PORT=9333
+
+  # ① 原生浏览器：PIDFILE 里的 pid 就是能用 kill 的那个
+  if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")" 2>/dev/null || true
+    echo "已请求关闭原生实例 (pid $(cat "$PIDFILE"))"
+    STOPPED=1
   fi
+
+  # ② Windows 浏览器：**PIDFILE 靠不住**，两个原因 ——
+  #    · 它写在 WSL 的 $TMPDIR 里，WSL 一重启就没了（Windows 的 Chrome 还活着）
+  #    · 就算还在，WSL 的 kill 也管不到 Windows 的 pid（两个 PID 命名空间）
+  #    所以按**调试端口**去 Windows 侧找。
+  #    实测踩到过：漏了两只跑了一整夜的孤儿，各占一份 profile（一份 8 MB 落在桌面）。
+  if command -v powershell.exe >/dev/null 2>&1; then
+    # 注意最后的 `|| true`：grep 无匹配时退出码是 1，而本脚本是 set -e ——
+    # 不兜住的话「没有实例」这种正常情况会让脚本静默退出（踩过）。
+    HIT="$(powershell.exe -NoProfile -Command "
+      Get-CimInstance Win32_Process -Filter \"Name='chrome.exe'\" |
+        Where-Object { \$_.CommandLine -like '*remote-debugging-port=$SEEK_PORT*' -and \$_.CommandLine -notlike '*--type=*' } |
+        ForEach-Object { taskkill /T /F /PID \$_.ProcessId | Out-Null; Write-Output \$_.ProcessId }
+    " 2>/dev/null | tr -d '\r' | grep -E '^[0-9]+$' | tr '\n' ' ')" || true
+    if [ -n "$HIT" ]; then echo "已关闭 Windows 侧实例 (pid: $HIT)"; STOPPED=1; fi
+  fi
+
+  rm -f "$PIDFILE" "$PORTFILE"
+  [ "$STOPPED" = 1 ] || echo "没有找到在跑 $SEEK_PORT 端口的实例"
   exit 0
 fi
 
