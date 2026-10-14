@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="minimal-white">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>dsh-design · 快速开始示例</title>
+<!--
+  这是一个**最小可跑**的示例 deck，用来验证「渲染 → 看图 → 检查」这条链路。
+
+      pnpm demo          # 渲染成 PNG，产物在 examples/.render/
+
+  资源路径指向仓库内的技能目录（../skills/od-deck/assets/），所以请在本仓库里跑。
+  真实项目里是先把 skills/od-deck/templates/deck.html 整个抄进你的工作区，
+  再改 :root 的 token 和每页的 <section class="slide">。
+-->
+<link rel="stylesheet" href="../skills/od-deck/assets/fonts.css">
+<link rel="stylesheet" href="../skills/od-deck/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../skills/od-deck/assets/themes/minimal-white.css">
+<link rel="stylesheet" href="../skills/od-deck/assets/animations/animations.css">
+<style>
+  /* SLOT: theme tokens —— 只改这里。数值来自 od-deck 的 warm-editorial 设计系统。 */
+  :root {
+    --bg:      oklch(98.5% 0.006 85);
+    --surface: oklch(100% 0.002 85);
+    --text-1:  oklch(21% 0.02 55);
+    --text-2:  oklch(45% 0.016 55);
+    --text-3:  oklch(62% 0.012 55);
+    --border:  oklch(90% 0.008 85);
+    --accent:  oklch(48% 0.13 32);
+    --font-display: 'Noto Serif SC', 'STZhongsong', Georgia, serif;
+    --font-body: 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  }
+
+  /* SLOT: per-deck styles —— 只定义你自己内容要用的类 */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 56px; margin-top: 44px; }
+  .step { border-top: 2px solid var(--border); padding-top: 22px; }
+  .step.is-on { border-top-color: var(--accent); }
+  .step .n { font-family: var(--font-mono); font-size: 13px; letter-spacing: .14em; color: var(--text-3); }
+  .step h3 { font-size: 27px; margin: 10px 0 12px; }
+  .step p { font-size: 17px; line-height: 1.62; color: var(--text-2); margin: 0; }
+  .chain { display: flex; align-items: center; gap: 18px; margin-top: 40px; font-family: var(--font-mono); font-size: 16px; }
+  .chain b { font-weight: 600; color: var(--accent); }
+  .chain i { color: var(--text-3); font-style: normal; }
+  .closing { font-size: 26px; line-height: 1.55; max-width: 46ch; color: var(--text-2); }
+  .footer { position: absolute; left: 96px; right: 96px; bottom: 52px; display: flex;
+            justify-content: space-between; font-size: 13px; color: var(--text-3); }
+</style>
+</head>
+<body data-themes="minimal-white" data-theme-base="../skills/od-deck/assets/themes/">
+<div class="deck">
+
+  <!-- 01 -->
+  <section class="slide active hero light" data-screen-label="01 封面">
+    <p class="kicker">DSH design workbench</p>
+    <h1 class="title">先看见，<br>再交付</h1>
+    <p class="lede">一个设计人格 + 两道确定性闸门。<br>让 agent 的视觉产出不再靠「看着还行」。</p>
+    <div class="footer"><span>dsh-design</span><span>示例 deck</span></div>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide light" data-screen-label="02 三道闸">
+    <p class="eyebrow">Workflow</p>
+    <h2 class="title">把「好看」拆成可执行的步骤</h2>
+    <div class="steps">
+      <div class="step is-on">
+        <div class="n">STEP 01</div>
+        <h3>绑定设计系统</h3>
+        <p>从 20 套品牌契约里选一套，把它的 token 写进 <code>:root</code>。不再凭空发明配色。</p>
+      </div>
+      <div class="step">
+        <div class="n">STEP 02</div>
+        <h3>渲染成图回看</h3>
+        <p><code>deck_render</code> 把每一页渲成 PNG —— 中文字体回退、标题挤行、内容溢出，都在这一步现形。</p>
+      </div>
+      <div class="step">
+        <div class="n">STEP 03</div>
+        <h3>用规则兜底</h3>
+        <p><code>deck_lint</code> 的 23 条反 AI-slop 规则是代码判定，不随模型换代漂移。</p>
+      </div>
+    </div>
+    <div class="chain">
+      <span>宪章</span><i>→</i><b>抄框架</b><i>→</i><span>写内容</span><i>→</i>
+      <b>渲染 · 看图</b><i>→</i><span>检查 · 改</span>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide light" data-screen-label="03 收尾">
+    <p class="eyebrow">Try it</p>
+    <h2 class="title">现在就渲一遍</h2>
+    <div class="rule" style="width:72px;height:3px;background:var(--accent);margin:26px 0 30px;"></div>
+    <p class="closing">在仓库根跑 <code>pnpm demo</code>，产物落在 <code>examples/.render/</code>。
+      先看拼图，再看单页 —— 有问题的那一页会自己跳出来。</p>
+    <div class="footer"><span>dsh-design</span><span>MIT · 内容见 THIRD-PARTY-NOTICES.md</span></div>
+  </section>
+
+</div>
+<script src="../skills/od-deck/assets/runtime.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "dsh-media-gen",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "BYOK image / video / speech generation for DeepSeek Harness, adapted by protocol rather than by vendor (OpenAI-compatible + queue).",
+  "main": "./index.js",
+  "files": ["index.js", "lib", "cordis.patch.yml", "scripts", "README.md", "LICENSE"],
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "media", "image-generation", "video-generation", "tts", "fal", "openai"],
+  "engines": { "node": "^22.19.0 || >=24.0.0" },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weiza0v0/dsh-design.git",
+    "directory": "packages/media-gen"
+  },
+  "homepage": "https://github.com/weiza0v0/dsh-design/tree/main/packages/media-gen#readme",
+  "bugs": { "url": "https://github.com/weiza0v0/dsh-design/issues" },
+  "scripts": {
+    "test": "node scripts/test-adapters.mjs"
+  },
+  "peerDependencies": { "@deepseek-ai/dsh-tools": "^0.1.7-rc.1 || ^0.2.0-rc.1" },
+  "peerDependenciesMeta": { "@deepseek-ai/dsh-tools": { "optional": true } },
+  "devDependencies": { "@deepseek-ai/dsh-tools": "0.2.0-rc.2" },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

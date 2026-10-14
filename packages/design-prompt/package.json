@@ -1,0 +1,44 @@
+{
+  "name": "dsh-design-prompt",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "The design charter as a CONTENT module — composes the OpenDesign charter chapters into one string. Consumed by dsh-design-stance; intentionally NOT a plugin (no apply(), no side effects).",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./content/*": "./content/*"
+  },
+  "files": [
+    "index.js",
+    "content",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node scripts/test-content.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-design",
+    "deepseek-harness",
+    "design",
+    "system-prompt",
+    "charter",
+    "opendesign"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weiza0v0/dsh-design.git",
+    "directory": "packages/design-prompt"
+  },
+  "homepage": "https://github.com/weiza0v0/dsh-design/tree/main/packages/design-prompt#readme",
+  "bugs": {
+    "url": "https://github.com/weiza0v0/dsh-design/issues"
+  }
+}

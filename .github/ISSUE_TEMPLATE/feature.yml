@@ -1,0 +1,39 @@
+name: 功能建议
+description: 想要新能力、新模型、新设计系统……
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你想解决什么问题
+      description: 先说场景，再说方案 —— 这样更容易找到更小的做法。
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你设想的做法
+    validations:
+      required: false
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 大概属于哪一类
+      options:
+        - 新的闸门 / 检查规则
+        - 新的设计系统 / 版式
+        - 新的媒体模型或协议适配
+        - 新的采集/检索能力
+        - 跨平台支持（macOS / Windows 原生）
+        - 文档
+        - 其他
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        > 一个提醒：本仓库**刻意不做**几件事 —— 不搬 OpenDesign 的全部 154 套设计系统、
+        > 不做 PPTX 导出、不改 DSH 本体。提之前可以先看一眼 README 的「已知限制」。

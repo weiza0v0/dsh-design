@@ -1,0 +1,11 @@
+# dsh-design-stance bundle layer —— 当 profile 的 dsh.profile.bundles 列了本包时生效。
+#
+# 一行 insert 即挂载。`name` 必须等于 npm 包名（从 profile 的 node_modules 解析），
+# 也必须等于 index.js 导出的 name。
+#
+# 为什么这一行必须存在：DSH 的 plugin-manager 只接受**声明了 bundle patch 的包**
+# （installBundle 的 validate 会回 not-a-bundle，并把 package.json / pnpm-lock.yaml
+# 回滚）。没有它，插件页和 `dsh plugin add` 都装不上，只能手工编辑 profile patch。
+- insert:
+    - id: design-stance
+      name: 'dsh-design-stance'

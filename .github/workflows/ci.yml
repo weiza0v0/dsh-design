@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # ① 契约检查 + 纯逻辑测试 —— 不需要浏览器，跑得快，node 22/24 都过一遍
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # 每个插件包都必须声明 dsh.bundle.patch —— 没有它，插件管理器会回滚安装。
+      # 这条曾经让 5 个包里的 4 个「装不上」，而本地完全没有症状。
+      - name: bundle contract
+        run: node scripts/test-bundles.mjs
+
+      - name: unit tests (no browser)
+        run: pnpm -r --workspace-concurrency=1 --filter '!dsh-deck-render' test
+
+  # ② 渲染测试 —— 真的起 Chromium 渲 HTML，验证「门一」没有静默失效。
+  #    单独一个 job，因为要装浏览器，比单元测试慢一个量级。
+  render:
+    name: render (chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: install chromium
+        run: pnpm --filter dsh-deck-render exec playwright install --with-deps chromium
+
+      - name: render tests
+        run: pnpm --filter dsh-deck-render test
+        env:
+          # 容器里 /dev/shm 常只有 64MB，大页面截图会崩在渲染途中
+          DECK_RENDER_ARGS: '--no-sandbox --disable-dev-shm-usage'

@@ -1,0 +1,68 @@
+{
+  "name": "dsh-design-stance",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Toggle a design persona inside one DSH session — /design on|off|status. No session switching.",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weiza0v0/dsh-design.git",
+    "directory": "packages/design-stance"
+  },
+  "homepage": "https://github.com/weiza0v0/dsh-design/tree/main/packages/design-stance#readme",
+  "bugs": {
+    "url": "https://github.com/weiza0v0/dsh-design/issues"
+  },
+  "keywords": [
+    "dsh", "dsh-plugin", "deepseek-harness", "design", "persona", "stance",
+    "mode-switch", "system-prompt", "agent"
+  ],
+  "scripts": {
+    "test": "node scripts/mock-test.mjs && node scripts/client-test.mjs && node scripts/projection-test.mjs",
+    "verify:prompt-api": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "dsh-design-prompt": "workspace:*"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.7-rc.1 || ^0.2.0-rc.1",
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": { "optional": true }
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2",
+    "zod": "^4.6.5"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ],
+      "platform": "web"
+    }
+  }
+}

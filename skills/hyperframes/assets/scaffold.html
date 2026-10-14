@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#faf7f2}
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="6"
+       data-width="1920" data-height="1080"
+       style="position:relative;overflow:hidden;background:#faf7f2">
+
+    <div id="rule" class="clip" data-start="0.2" data-duration="5.8" data-track-index="0"
+         style="position:absolute;left:160px;top:372px;width:1600px;height:1px;background:rgba(33,29,24,.32)"></div>
+
+    <div id="eyebrow" class="clip" data-start="0.3" data-duration="5.7" data-track-index="1"
+         style="position:absolute;left:160px;top:318px;font:20px/1 ui-monospace,SFMono-Regular,monospace;letter-spacing:.14em;color:#8a7f6d">
+      OPENAI / MATH · 开放研究资料
+    </div>
+
+    <h1 id="title" class="clip" data-start="0.6" data-duration="5.4" data-track-index="2"
+        style="position:absolute;left:156px;top:430px;font:700 132px/1.15 Georgia,'Songti SC','Source Han Serif SC',serif;color:#211d18;letter-spacing:-.01em">
+      OpenAI 开源<br><span style="color:#b3431b">722</span> 篇数学手稿
+    </h1>
+
+    <p id="sub" class="clip" data-start="1.2" data-duration="4.8" data-track-index="3"
+       style="position:absolute;left:162px;top:790px;font:400 30px/1.5 Georgia,'Songti SC',serif;color:#5d564c">
+      722 篇手稿 · 372 个结果族 · 17 个数学学科
+    </p>
+
+    <div id="corner" class="clip" data-start="1.6" data-duration="4.4" data-track-index="4"
+         style="position:absolute;right:160px;bottom:150px;font:18px/1.6 ui-monospace,monospace;letter-spacing:.1em;color:#8a7f6d;text-align:right">
+      2026 · 10 · 06<br>Apache-2.0
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.from("#rule",    { scaleX: 0, transformOrigin: "left center", duration: 1.0 }, 0.2)
+      .from("#eyebrow", { opacity: 0, y: 14, duration: 0.6 }, 0.3)
+      .from("#title",   { opacity: 0, y: 52, duration: 0.9 }, 0.6)
+      .from("#sub",     { opacity: 0, y: 24, duration: 0.7 }, 1.2)
+      .from("#corner",  { opacity: 0, duration: 0.6 }, 1.6);
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

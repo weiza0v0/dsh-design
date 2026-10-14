@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="zh-CN" data-od-deck-protocol="1">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenAI 开源 722 篇数学手稿 · 学术期刊版</title>
+  <style>
+    /* ===========================================================
+       Deck framework — DO NOT EDIT the rules in this <style> block.
+       Edit only inside the second <style> block below (per-deck
+       styles) and inside <section class="slide"> bodies.
+
+       Contract this framework provides:
+         - 1920×1080 fixed canvas, scaled to fit the viewport
+         - Only .slide.active is visible at a time
+         - Programmatic prev/next + counter elements kept outside the scaled
+           stage but hidden by default so the host can render the UI chrome
+         - OD Deck Protocol v1 absolute navigation + slide-state events
+         - Keyboard (← → space PgUp PgDn Home End R), half-slide click, and stored
+           position survive iframe focus quirks
+         - "Save as PDF" produces a multi-page vertical PDF, one slide
+           per page, by toggling every slide visible under @media print
+       =========================================================== */
+    :root {
+      /* SLOT: theme tokens — direction `editorial-monocle`, bound verbatim. */
+      --bg:      oklch(98% 0.004 95);
+      --surface: oklch(100% 0.002 95);
+      --fg:      oklch(20% 0.018 70);
+      --muted:   oklch(48% 0.012 70);
+      --border:  oklch(90% 0.006 95);
+      --accent:  oklch(52% 0.10 28);
+      --shell:   oklch(20% 0.018 70);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--shell);
+      color: var(--fg);
+      font: 18px/1.5 -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .deck-shell {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    .deck-stage {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg);
+      position: relative;
+      transform-origin: top left;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    /* Visibility toggle hardened with :not(.active) + !important so cascade
+       order can't break it. The previous `.slide { display:none }` rule
+       lost the cascade whenever a per-slide variant class (e.g.
+       `.s-cold { display:grid }`) was declared after it on the same
+       element — every slide silently became visible at once. The
+       `!important` is a belt-and-suspenders against agent code that adds
+       `!important` on variant classes too. */
+    .slide:not(.active) { display: none !important; }
+    /* The active default uses :where() so it has zero specificity. Per-slide
+       variant classes like `.s-cold { display:grid }` or
+       `.s-magazine { display:block }` can override the default flex layout
+       just by declaring `display` — no need for the variant to be more
+       specific. The hide rule above still wins for inactive slides. */
+    :where(.slide.active) { display: flex; flex-direction: column; }
+
+    /* Programmatic chrome — counter + prev/next live outside the scaled
+       stage so the host bridge can read/update them, but they stay hidden
+       in preview, presentation, fullscreen, and new-tab modes. */
+    .deck-counter {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: rgba(10, 14, 26, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.18em;
+      z-index: 1000;
+    }
+    .deck-counter button {
+      width: 36px; height: 36px;
+      background: transparent;
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s;
+    }
+    .deck-counter button:hover { background: rgba(255, 255, 255, 0.12); }
+    .deck-counter button[disabled] { opacity: 0.3; cursor: default; }
+    .deck-counter .deck-count {
+      padding: 0 14px;
+      letter-spacing: 0.22em;
+    }
+    .deck-counter .deck-count .total { color: rgba(255, 255, 255, 0.5); }
+    .deck-hint {
+      position: fixed;
+      bottom: 26px;
+      right: 28px;
+      color: rgba(255, 255, 255, 0.4);
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      z-index: 999;
+      pointer-events: none;
+      display: none;
+    }
+
+    /* Print / PDF stitching — every slide stacks top-to-bottom, one per
+       page. The viewer's "Share → PDF" relies on this; do not remove. */
+    @media print {
+      @page { size: 1920px 1080px; margin: 0; }
+      html, body {
+        width: 1920px !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+      }
+      .deck-shell {
+        position: static !important;
+        display: block !important;
+        inset: auto !important;
+      }
+      .deck-stage {
+        width: 1920px !important;
+        height: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        position: static !important;
+      }
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        inset: auto !important;
+        width: 1920px !important;
+        height: 1080px !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .deck-counter, .deck-hint { display: none !important; }
+    }
+  </style>
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       SLOT: per-deck styles — 学术期刊编辑风格（Editorial / Monocle）
+       衬线为主、细线分栏、大量留白；accent 每页至多两处。
+       ══════════════════════════════════════════════════════════════ */
+    :root {
+      --rule-soft: oklch(20% 0.018 70 / 0.16);
+      --font-display: 'Iowan Old Style', 'Charter', Georgia, 'Times New Roman', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', 'FandolSong', 'SimSun', 'STSong', serif;
+      --font-body: 'Charter', Georgia, 'Times New Roman', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', 'FandolSong', 'SimSun', 'STSong', serif;
+      --font-mono: ui-monospace, 'SF Mono', 'DejaVu Sans Mono', 'Noto Sans Mono', Menlo, Consolas, monospace;
+    }
+
+    /* ── theme surfaces（simple-deck 主题节律类） ─────────────────── */
+    .slide.light { background: var(--bg); color: var(--fg); }
+    .slide.dark  { background: var(--fg); color: var(--bg); }
+    .slide.dark .pg { background: var(--fg); color: var(--bg); }
+    .slide.dark .rh, .slide.dark .fig__note, .slide.dark .epigraph__cap { color: oklch(80% 0.008 95); }
+    .slide.dark .rule { background: var(--bg); }
+    .slide.dark .rule--soft { background: oklch(100% 0 0 / 0.24); }
+
+    /* ── 版心 ─────────────────────────────────────────────────────── */
+    .pg {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      padding: 64px 120px 44px;
+      background: var(--bg); color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 24px; line-height: 1.7;
+    }
+
+    /* ── 书眉与分隔线 ─────────────────────────────────────────────── */
+    .rh {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-family: var(--font-mono); font-size: 20px; line-height: 1.3;
+      color: var(--muted);
+    }
+    .rh__l { letter-spacing: 0.16em; text-transform: uppercase; }
+    .rh__zh { text-transform: none; letter-spacing: 0.06em; margin-left: 22px; }
+    .rh__r { letter-spacing: 0.12em; }
+    .rule { height: 2px; background: var(--fg); margin-top: 18px; flex: none; }
+    .rule--soft { height: 1px; background: var(--rule-soft); margin-top: 0; }
+
+    /* ── 小标签 ───────────────────────────────────────────────────── */
+    .eyebrow {
+      font-family: var(--font-mono); font-size: 20px; line-height: 1.4;
+      letter-spacing: 0.08em; color: var(--muted); margin: 0 0 22px;
+    }
+
+    /* ══ 01 封面 ═══════════════════════════════════════════════════ */
+    .cover__body {
+      display: grid; grid-template-columns: 960px 1fr;
+      column-gap: 120px; margin-top: 60px;
+    }
+    .h-cover {
+      font-family: var(--font-display); font-size: 92px; line-height: 1.3;
+      letter-spacing: 0; font-weight: 600; margin: 0 0 34px;
+    }
+    .h-cover .latin { letter-spacing: -0.02em; }
+    .h-cover__num { color: var(--accent); font-size: 1.1em; letter-spacing: -0.01em; }
+    .standfirst {
+      font-size: 30px; line-height: 1.75; color: var(--fg);
+      max-width: 30em; margin: 0 0 42px;
+    }
+    .epigraph { border-top: 1px solid var(--rule-soft); padding-top: 24px; max-width: 900px; }
+    .epigraph__eq {
+      font-family: var(--font-display); font-size: 40px; line-height: 1.5;
+      letter-spacing: 0.005em; margin: 0 0 12px;
+    }
+    .epigraph__eq i { font-style: italic; }
+    .epigraph__eq sub, .epigraph__eq sup { font-size: 0.55em; line-height: 0; }
+    .epigraph__eq sup { vertical-align: 0.45em; }
+    .epigraph__eq sub { vertical-align: -0.25em; }
+    .epigraph__cap { font-size: 22px; line-height: 1.7; color: var(--muted); max-width: 38em; margin: 0; }
+
+    .plate { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; }
+    .plate__cap {
+      font-size: 20px; line-height: 1.65; color: var(--muted);
+      text-align: right; max-width: 32em; margin: 0 0 20px;
+    }
+    .plate__img { display: block; width: 620px; height: 620px; }
+
+    .colophon { margin-top: auto; }
+    .colophon__row {
+      font-family: var(--font-mono); font-size: 22px; line-height: 1.5;
+      margin: 16px 0 8px;
+    }
+    .colophon__note {
+      font-family: var(--font-mono); font-size: 20px; line-height: 1.6;
+      color: var(--muted); margin: 0;
+    }
+
+    /* ══ 02 数字速览 ═══════════════════════════════════════════════ */
+    .data__head {
+      display: grid; grid-template-columns: 1fr auto; align-items: end;
+      column-gap: 80px; margin-top: 34px;
+    }
+    .h-section {
+      font-family: var(--font-display); font-size: 68px; line-height: 1.35;
+      letter-spacing: 0; font-weight: 600; margin: 0;
+    }
+    .data__note {
+      font-size: 24px; line-height: 1.7; color: var(--muted);
+      text-align: right; max-width: 26em; margin: 0 0 10px;
+    }
+
+    .figures { display: grid; grid-template-columns: 1fr 1fr; margin-top: 38px; }
+    .fig { padding-right: 110px; }
+    .fig + .fig { border-left: 1px solid var(--rule-soft); padding-left: 110px; padding-right: 0; }
+    .fig__num {
+      font-family: var(--font-display); font-size: 104px; line-height: 1;
+      letter-spacing: -0.01em; font-weight: 600; color: var(--accent);
+      margin: 0 0 12px;
+    }
+    .fig__slash { font-size: 0.62em; opacity: 0.7; }
+    .fig__label {
+      font-family: var(--font-display); font-size: 34px; line-height: 1.4;
+      margin: 0 0 10px;
+    }
+    .fig__note { font-size: 24px; line-height: 1.7; color: var(--muted); margin: 0; max-width: 30em; }
+
+    .dtable { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 40px; }
+    .dtable caption {
+      caption-side: top; text-align: left;
+      font-family: var(--font-mono); font-size: 22px; line-height: 1.4;
+      letter-spacing: 0.06em; color: var(--muted); padding: 0 0 14px;
+    }
+    .dtable th, .dtable td { text-align: left; vertical-align: baseline; }
+    .dtable tbody tr { border-top: 1px solid var(--rule-soft); }
+    .dtable tbody tr:first-child { border-top: 1px solid var(--fg); }
+    .dtable th {
+      font-weight: 500; font-size: 26px; line-height: 1.5;
+      letter-spacing: 0.02em; padding: 13px 0;
+    }
+    .dtable td.v {
+      font-family: var(--font-display); font-size: 42px; line-height: 1.2;
+      letter-spacing: -0.01em; font-weight: 600; padding: 6px 0;
+    }
+    .dtable td.n { font-size: 24px; line-height: 1.6; color: var(--muted); padding: 13px 0; }
+
+    .source { margin-top: auto; padding-top: 26px; }
+    .source p {
+      font-family: var(--font-mono); font-size: 20px; line-height: 1.6;
+      color: var(--muted); margin: 14px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="deck-stage" id="deck-stage">
+
+      <!-- ═══════════ 01 封面 ═══════════ -->
+      <section class="slide active hero light" data-screen-label="01 封面">
+        <div class="pg" data-od-id="page-cover">
+          <header class="rh" data-od-id="cover-masthead">
+            <span class="rh__l">OpenAI / Math<span class="rh__zh">开放研究资料</span></span>
+            <span class="rh__r">2026 · 10 · 06</span>
+          </header>
+          <div class="rule"></div>
+
+          <div class="cover__body">
+            <div class="cover__main">
+              <p class="eyebrow">未发布的内部前沿模型 · 数学研究成果整体公开</p>
+              <h1 class="h-cover" data-od-id="cover-title">
+                <span class="latin">OpenAI</span> 开源<br />
+                <span class="h-cover__num">722</span> 篇数学手稿
+              </h1>
+              <p class="standfirst" data-od-id="cover-standfirst">
+                一个尚未发布的内部前沿模型，把它的数学研究成果一次性整体公开：722 篇手稿、372 个结果族、17 个数学学科，全部以 Apache-2.0 许可发布。
+              </p>
+              <div class="epigraph" data-od-id="cover-epigraph">
+                <p class="epigraph__eq">ζ(<i>s</i>) = &sum;<sub><i>n</i> ≥ 1</sub> <i>n</i><sup>−<i>s</i></sup> = &prod;<sub><i>p</i></sub> (1 − <i>p</i><sup>−<i>s</i></sup>)<sup>−1</sup></p>
+                <p class="epigraph__cap">欧拉乘积：黎曼 ζ 函数与素数分布的纽带。本次公开中讨论度最高的一条结果，把 ζ 的无零点区域推进到 Re(<i>s</i>) &gt; 11/12。</p>
+              </div>
+            </div>
+
+            <figure class="plate" data-od-id="cover-plate">
+              <figcaption class="plate__cap">图 · Calabi–Yau 流形的截面投影。Wikimedia Commons，CC BY-SA 2.5，作者 Lunch。</figcaption>
+              <img class="plate__img" src="assets/calabi-yau-manifold.png" width="840" height="840" alt="Calabi–Yau 流形的截面投影示意图" />
+            </figure>
+          </div>
+
+          <footer class="colophon" data-od-id="cover-colophon">
+            <div class="rule rule--soft"></div>
+            <p class="colophon__row">仓库 github.com/openai/math　·　许可证 Apache-2.0　·　配套页 “Sharing AI progress in mathematics”</p>
+            <p class="colophon__note">本资料依据公开信息整理：OpenAI 官方仓库与目录、Ten Advances 白皮书、社区与媒体报道；配图取自 Wikimedia Commons，署名与许可见末页。</p>
+          </footer>
+        </div>
+      </section>
+
+      <!-- ═══════════ 02 数字速览 ═══════════ -->
+      <section class="slide hero light" data-screen-label="02 数字速览">
+        <div class="pg" data-od-id="page-figures">
+          <header class="rh" data-od-id="figures-masthead">
+            <span class="rh__l">OpenAI / Math<span class="rh__zh">开放研究资料</span></span>
+            <span class="rh__r">02</span>
+          </header>
+          <div class="rule"></div>
+
+          <div class="data__head">
+            <div>
+              <p class="eyebrow">数据 / Data</p>
+              <h2 class="h-section" data-od-id="figures-title">数字速览</h2>
+            </div>
+            <p class="data__note">发布稿口径 722 篇；当前目录口径 719 篇（修订后）。<br />两种口径在下文并列标注，以免误导。</p>
+          </div>
+
+          <div class="figures">
+            <div class="fig" data-od-id="figure-manuscripts">
+              <p class="fig__num">722 <span class="fig__slash">/</span> 719</p>
+              <p class="fig__label">篇手稿</p>
+              <p class="fig__note">首发 722 篇，当前目录 719 篇（修订后）。</p>
+            </div>
+            <div class="fig" data-od-id="figure-families">
+              <p class="fig__num">372</p>
+              <p class="fig__label">个结果族</p>
+              <p class="fig__note">一个族含主结果、伴随论证、推论或替代证明。</p>
+            </div>
+          </div>
+
+          <table class="dtable" data-od-id="table-key-figures">
+            <caption>表 1 · 其余关键数字</caption>
+            <colgroup>
+              <col style="width: 320px" />
+              <col style="width: 280px" />
+              <col />
+            </colgroup>
+            <tbody>
+              <tr>
+                <th scope="row">数学学科</th>
+                <td class="v">17</td>
+                <td class="n">从数论、代数几何，到偏微分方程与数理逻辑</td>
+              </tr>
+              <tr>
+                <th scope="row">推理解读</th>
+                <td class="v">10 篇</td>
+                <td class="n">模型推理过程的删节摘要，族号即目录编号</td>
+              </tr>
+              <tr>
+                <th scope="row">Lean 形式化</th>
+                <td class="v">≈42%</td>
+                <td class="n">顶级结果中已附带机器可复核的形式化证明</td>
+              </tr>
+              <tr>
+                <th scope="row">评估题目</th>
+                <td class="v">≈4000 道</td>
+                <td class="n">聚合、筛选后得到 372 个结果族</td>
+              </tr>
+              <tr>
+                <th scope="row">平均算力</th>
+                <td class="v">≈3 小时</td>
+                <td class="n">每个结果约 3 小时 ChatGPT Pro thinking 算力</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <footer class="source" data-od-id="figures-source">
+            <div class="rule rule--soft"></div>
+            <p>来源：openai/math 仓库 README · overview.pdf（OpenAI Research Catalog，2026-10-06）。发布后数日仓库体量 14.6k stars / 1.6k forks。</p>
+          </footer>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Framework chrome — DO NOT EDIT below this line. -->
+  <nav class="deck-counter" role="navigation" aria-label="Deck navigation">
+    <button type="button" id="deck-prev" aria-label="Previous slide">‹</button>
+    <span class="deck-count"><span id="deck-cur">01</span> <span class="total">/ <span id="deck-total">01</span></span></span>
+    <button type="button" id="deck-next" aria-label="Next slide">›</button>
+  </nav>
+  <div class="deck-hint">← / → · space · R reset</div>
+
+  <script>
+    (function () {
+      var stage = document.getElementById('deck-stage');
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+      var prev = document.getElementById('deck-prev');
+      var next = document.getElementById('deck-next');
+      var cur = document.getElementById('deck-cur');
+      var total = document.getElementById('deck-total');
+      var STORE = 'deck:idx:' + (location.pathname || '/');
+      var idx = 0;
+
+      // ---- scale-to-fit ---------------------------------------------------
+      // The stage is 1920×1080 and sits at .deck-shell's (0, 0) in normal
+      // block flow — the shell is intentionally NOT a grid/flex container,
+      // so the stage's natural top-left is (0, 0). We scale via transform
+      // with transform-origin:top-left, then translate by the remainder to
+      // center the scaled box in the viewport. This survives nested
+      // transforms (e.g. when the OD viewer wraps the iframe in its own
+      // scale wrapper at zoom != 100%).
+      function fit() {
+        var sw = window.innerWidth;
+        var sh = window.innerHeight;
+        var pad = 32;
+        var s = Math.min((sw - pad) / 1920, (sh - pad) / 1080);
+        if (!isFinite(s) || s <= 0) s = 1;
+        var tx = (sw - 1920 * s) / 2;
+        var ty = (sh - 1080 * s) / 2;
+        stage.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+      }
+
+      // ---- navigation -----------------------------------------------------
+      function pad2(n) { return (n < 10 ? '0' : '') + n; }
+      function paint() {
+        slides.forEach(function (el, i) { el.classList.toggle('active', i === idx); });
+        if (cur) cur.textContent = pad2(idx + 1);
+        if (total) total.textContent = pad2(slides.length);
+        if (prev) prev.toggleAttribute('disabled', idx <= 0);
+        if (next) next.toggleAttribute('disabled', idx >= slides.length - 1);
+        postDeckState();
+      }
+      function go(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        paint();
+        try { localStorage.setItem(STORE, String(idx)); } catch (_) {}
+      }
+      var OD_DECK_PROTOCOL_VERSION = 1;
+      function postDeckState() {
+        try {
+          window.parent.postMessage({
+            type: 'od:slide-state',
+            protocolVersion: OD_DECK_PROTOCOL_VERSION,
+            active: idx,
+            count: slides.length
+          }, '*');
+        } catch (_) {}
+      }
+      function announceDeckProtocol() {
+        try {
+          window.parent.postMessage({
+            type: 'od:deck-ready',
+            protocolVersion: OD_DECK_PROTOCOL_VERSION,
+            capabilities: ["absolute-navigation","state-events"]
+          }, '*');
+        } catch (_) {}
+      }
+      window.addEventListener('message', function (event) {
+        var data = event && event.data;
+        if (!data || data.type !== 'od:slide') return;
+        if (data.protocolVersion != null && data.protocolVersion !== OD_DECK_PROTOCOL_VERSION) return;
+        var target = idx;
+        if (data.action === 'go') {
+          if (typeof data.index !== 'number' || !isFinite(data.index)) return;
+          target = Math.floor(data.index);
+        } else if (data.action === 'next') target = idx + 1;
+        else if (data.action === 'prev') target = idx - 1;
+        else if (data.action === 'first') target = 0;
+        else if (data.action === 'last') target = slides.length - 1;
+        else return;
+        go(target);
+      });
+      function onKey(e) {
+        if (e.__odDeckKeyHandled) return;
+        var t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.__odDeckKeyHandled = true; e.preventDefault(); go(idx + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.__odDeckKeyHandled = true; e.preventDefault(); go(idx - 1); }
+        else if (e.key === 'Home' || String(e.key).toLowerCase() === 'r') { e.__odDeckKeyHandled = true; e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.__odDeckKeyHandled = true; e.preventDefault(); go(slides.length - 1); }
+      }
+      // Capture phase + listen on both targets — inside the OD iframe,
+      // focus may be on window OR document; a single non-capture listener
+      // silently misses presses.
+      window.addEventListener('keydown', onKey, true);
+      document.addEventListener('keydown', onKey, true);
+      if (prev) prev.addEventListener('click', function () { go(idx - 1); });
+      if (next) next.addEventListener('click', function () { go(idx + 1); });
+      document.addEventListener('click', function (e) {
+        if (e.defaultPrevented) return;
+        if (e.button !== undefined && e.button !== 0) return;
+        if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+        var t = e.target;
+        while (t && t !== document.body && t !== document.documentElement) {
+          var tag = String(t.tagName || '').toUpperCase();
+          if (
+            tag === 'A' ||
+            tag === 'BUTTON' ||
+            tag === 'INPUT' ||
+            tag === 'TEXTAREA' ||
+            tag === 'SELECT' ||
+            t.isContentEditable ||
+            t.getAttribute('role') === 'button' ||
+            t.getAttribute('role') === 'link'
+          ) return;
+          t = t.parentElement;
+        }
+        focusDeck();
+        if (e.clientX < window.innerWidth / 2) go(idx - 1);
+        else go(idx + 1);
+      }, true);
+
+      // Auto-focus body so arrow keys work without an initial click.
+      document.body.setAttribute('tabindex', '-1');
+      document.body.style.outline = 'none';
+      function focusDeck() { try { window.focus(); document.body.focus({ preventScroll: true }); } catch (_) {} }
+      document.addEventListener('mousedown', focusDeck);
+      window.addEventListener('load', focusDeck);
+
+      // Restore last position.
+      try {
+        var saved = parseInt(localStorage.getItem(STORE) || '0', 10);
+        if (!isNaN(saved) && saved >= 0 && saved < slides.length) idx = saved;
+      } catch (_) {}
+
+      window.addEventListener('resize', fit);
+      announceDeckProtocol();
+      fit();
+      paint();
+      focusDeck();
+    })();
+  </script>
+</body>
+</html>

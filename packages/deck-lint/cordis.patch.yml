@@ -1,0 +1,11 @@
+# dsh-deck-lint bundle patch.
+#
+# 一行 insert 即挂载。本插件是纯宿主端工具（向模型暴露 deck_lint），
+# 没有浏览器半身，所以不需要 package.json 的 dsh.client 段。
+#
+# 约定（与 dsh-our-free-model / dsh-vscode-file-links 一致）：
+# - row 的 id 是 profile 内唯一标识，任取
+# - row 的 name 必须等于 npm 包名，也必须等于 index.js 导出的 name
+- insert:
+    - id: deck-lint
+      name: 'dsh-deck-lint'

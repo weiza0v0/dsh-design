@@ -1,0 +1,18 @@
+{
+  "name": "dsh-design",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DSH design workbench — an in-session design persona plus the deterministic gates (render / lint) and the design asset library that make an agent's visual output trustworthy.",
+  "license": "MIT",
+  "engines": { "node": "^22.19.0 || >=24.0.0" },
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "test": "node scripts/test-bundles.mjs && pnpm -r test",
+    "test:bundles": "node scripts/test-bundles.mjs",
+    "demo": "node packages/deck-render/cli.mjs examples/quickstart-deck.html"
+  },
+  "devDependencies": {
+    "yaml": "^2.8.1"
+  }
+}

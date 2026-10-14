@@ -1,0 +1,65 @@
+name: Bug 报告
+description: 有东西坏了 —— 渲染不对、lint 误报、装不上……
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        谢谢报告。这个项目里**最有价值的 bug 是「静默失效」** ——
+        工具报告成功、但结果其实是错的（比如渲染出一叠相同的图却报「全部渲好」）。
+        如果你遇到的是这种，请在下面重点说明。
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: 哪个包
+      options:
+        - dsh-design-stance（/design 换装）
+        - dsh-design-prompt（宪章内容）
+        - dsh-deck-render（deck_render）
+        - dsh-deck-lint（deck_lint）
+        - dsh-media-gen（media_generate）
+        - skills/od-deck
+        - skills/hyperframes
+        - 仓库本身 / CI / 文档
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 期望 vs 实际。
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 怎么复现
+      description: 命令、输入文件（脱敏后）、或最小 HTML。
+      placeholder: |
+        1. dsh plugin --profile web add dsh-deck-render
+        2. deck_render(path="…")
+        3. 看到 …
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据
+      description: |
+        强烈建议附上：渲染出来的 PNG / 拼图、`deck_lint` 的完整输出、
+        或 `md5sum` 结果。**这类问题靠读代码很难判断对错。**
+    validations:
+      required: false
+
+  - type: input
+    id: env
+    attributes:
+      label: 环境
+      description: DSH 版本、Node 版本、操作系统（WSL / macOS / Windows 原生）
+      placeholder: DSH 0.2.0-rc.2 · Node v24.18.0 · WSL2 (Ubuntu)
+    validations:
+      required: true

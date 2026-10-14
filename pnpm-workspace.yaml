@@ -1,0 +1,15 @@
+# pnpm 工作区 —— 本仓库是一个 monorepo
+#
+# nodeLinker 与 DSH 宿主 profile 一致（见 ~/.dsh/profiles/web/pnpm-workspace.yaml）。
+#
+# autoInstallPeers 与宿主**相反**，这里是 true，原因：
+# `@deepseek-ai/dsh-tools`（本仓库的 devDependency，只为跑测试）声明了 11 个
+# DSH 内部 peer —— cordis / dsh-agent / dsh-llm / dsh-session / dsh-scope …
+# 它的入口 lib/index.js 一上来就 import cordis。autoInstallPeers=false 时这些
+# peer 不会被装，测试直接 ERR_MODULE_NOT_FOUND。宿主那边 false 是对的
+# （peer 由宿主自己提供），仓库这边必须让 pnpm 补齐整张图。
+packages:
+  - 'packages/*'
+
+nodeLinker: hoisted
+autoInstallPeers: true

@@ -1,0 +1,49 @@
+{
+  "name": "dsh-deck-render",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Render an HTML deck/page to PNGs so an agent can look at its own output. DSH tool + standalone CLI. Cross-platform (macOS/Linux/Windows/WSL).",
+  "main": "./index.js",
+  "bin": { "deck-render": "./cli.mjs" },
+  "exports": {
+    ".": "./index.js",
+    "./lib": "./lib/render.js",
+    "./package.json": "./package.json"
+  },
+  "files": ["index.js", "cli.mjs", "lib", "cordis.patch.yml", "scripts", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node scripts/test-render.mjs && node scripts/test-tool.mjs",
+    "cli": "node cli.mjs",
+    "headless": "bash scripts/start-headless-browser.sh"
+  },
+  "keywords": [
+    "dsh", "dsh-plugin", "deepseek-harness", "deck", "slides", "presentation",
+    "render", "screenshot", "playwright", "html", "design", "agent"
+  ],
+  "engines": { "node": "^22.19.0 || >=24.0.0" },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weiza0v0/dsh-design.git",
+    "directory": "packages/deck-render"
+  },
+  "homepage": "https://github.com/weiza0v0/dsh-design/tree/main/packages/deck-render#readme",
+  "bugs": { "url": "https://github.com/weiza0v0/dsh-design/issues" },
+  "dependencies": {
+    "playwright-core": "^1.60.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.7-rc.1 || ^0.2.0-rc.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": { "optional": true }
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

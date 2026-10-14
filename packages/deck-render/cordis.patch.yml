@@ -1,0 +1,7 @@
+# dsh-deck-render bundle layer —— 当 profile 的 dsh.profile.bundles 列了本包时生效。
+#
+# 为什么这一行必须存在：DSH 的 plugin-manager 只接受**声明了 bundle patch 的包**
+# （否则回 not-a-bundle 并回滚安装）。没有它，插件页和 `dsh plugin add` 都装不上。
+- insert:
+    - id: deck-render
+      name: 'dsh-deck-render'

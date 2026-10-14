@@ -1,0 +1,8 @@
+# 本地开发用的 peer 链接（指向 DSH 安装内的 @deepseek-ai/dsh-tools）。
+# 运行时该 peer 由宿主提供，不需要提交。
+node_modules/
+
+# 安装到 profile 前的配置备份
+.profile-package.json.bak
+
+*.log

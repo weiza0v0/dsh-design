@@ -1,0 +1,62 @@
+{
+  "name": "dsh-deck-lint",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Deterministic anti-AI-slop linter for HTML decks and pages, exposed as a DSH tool. Ported from OpenDesign's lint-artifact (Apache-2.0).",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weiza0v0/dsh-design.git",
+    "directory": "packages/deck-lint"
+  },
+  "homepage": "https://github.com/weiza0v0/dsh-design/tree/main/packages/deck-lint#readme",
+  "bugs": {
+    "url": "https://github.com/weiza0v0/dsh-design/issues"
+  },
+  "scripts": {
+    "test": "node --test tests/lint.test.mjs",
+    "test:smoke": "node --test tests/smoke.test.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deck",
+    "slides",
+    "ppt",
+    "lint",
+    "anti-ai-slop",
+    "design"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.7-rc.1 || ^0.2.0-rc.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
