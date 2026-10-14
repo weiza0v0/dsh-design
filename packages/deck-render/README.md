@@ -39,7 +39,7 @@ npx dsh-deck-render deck.html
 Playwright 自带浏览器需要装一次：
 
 ```bash
-npx playwright install chromium
+npx playwright install chromium          # 或本包自带的：npx playwright-core install chromium
 ```
 
 ## 用法

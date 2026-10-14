@@ -54,8 +54,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # 注意是 `playwright-core`，不是 `playwright`。
+      # 本包只依赖 playwright-core（够用，且轻），而它**自带** install 子命令；
+      # 写成 `playwright install` 会因为没装完整包而报 command not found（踩过）。
       - name: install chromium
-        run: pnpm --filter dsh-deck-render exec playwright install --with-deps chromium
+        run: pnpm exec playwright-core install --with-deps chromium
 
       - name: render tests
         run: pnpm --filter dsh-deck-render test

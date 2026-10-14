@@ -115,12 +115,12 @@ pnpm install
 
 ```bash
 pnpm install
-pnpm exec playwright install chromium   # 首次需要：渲染要一个浏览器
+pnpm exec playwright-core install chromium   # 首次需要：渲染要一个浏览器
 pnpm demo                                # → examples/.render/，约 12 秒
 ```
 
 > 如果你机器上已经装了 Chrome / Chromium（或已在跑调试端口），
-> 第一条 `playwright install` 可以跳过 —— 渲染器会自己找到它。
+> 第一条安装命令可以跳过 —— 渲染器会自己找到它。
 > 找不到时它会明确告诉你三选一怎么办，而不是丢一串 Playwright 的路径报错。
 
 ---

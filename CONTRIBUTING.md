@@ -14,7 +14,7 @@ npm test              # 契约检查 + 全部工作区测试（307 项）
 ```
 
 需要 **Node 22.19+ 或 24+** 与 **pnpm 12**。渲染测试还需要一个 Chromium
-（`pnpm --filter dsh-deck-render exec playwright install chromium`）。
+（`pnpm exec playwright-core install chromium` —— 注意是 playwright-core，本包只依赖它）。
 
 ### 两条容易踩的工作区约定
 
