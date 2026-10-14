@@ -35,6 +35,7 @@ npx dsh-deck-render deck.html
 | 连已有调试端口 | `cdp` | 最省事。用户已有浏览器在跑时用它 |
 | 指定可执行文件 | `browser` | 交给 Playwright 拉起 |
 | 都没给 | — | 先试默认 `127.0.0.1:9223`，不行再用 Playwright 自带 Chromium |
+| 跳过那个默认探测 | 环境变量 `DECK_RENDER_NO_DEFAULT_CDP=1` | **自动化/CI 用**。见下方「静默接管」 |
 
 Playwright 自带浏览器需要装一次：
 
@@ -239,6 +240,23 @@ schema 声明的必须被 `execute()` 填（否则是死字段）。
 | `od-deck/templates/deck.html`（修复前） | 12 页，**1 个唯一** ❌ |
 | `od-deck/templates/deck.html`（修复后） | 6 页，6 个唯一 ✅ |
 
+
+### ⚠️ 默认会「静默接管」机器上开着的调试端口
+
+不传 `cdp` 也不传 `browser` 时，renderer 会先探测 `127.0.0.1:9223`。**只要那里有东西在听，
+它就接管** —— 包括跟你毫不相干的浏览器（比如给网页自动化用的那只 Windows Chrome）。
+
+后果是渲染结果**随环境漂移**，而且报错很绕：那只是 Windows 浏览器，读不到 WSL 的 `/tmp`，
+于是渲染一个临时文件会报「目标浏览器在 Windows 侧，但路径不在挂载盘」。
+
+**所以自动化、CI、本地测试一律设：**
+
+```bash
+export DECK_RENDER_NO_DEFAULT_CDP=1   # 跳过默认探测，老实拉一只自己的浏览器
+```
+
+显式传 `cdp=` 仍然优先生效。本仓库的渲染测试就是这么做的 —— 否则「测试红绿」会由
+你机器上碰巧开着什么决定，不由代码决定。
 
 ## 已知限制
 

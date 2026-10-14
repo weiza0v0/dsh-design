@@ -186,14 +186,24 @@ export async function resolveBrowser({ cdp, browser, browserPlatform } = {}) {
 
   // ③ 都没给：先试默认调试端口（本机常有常驻浏览器），不行再用 Playwright 自带。
   //    这个顺序对使用者最省事，同时在没有常驻浏览器的机器上也能跑通。
-  try {
-    const info = await probeCdp(DEFAULT_CDP);
-    return {
-      mode: 'connect', endpoint: DEFAULT_CDP, owns: false,
-      browserPlatform: platformOf(uaOf(info)),
-      via: `connected ${info.Browser ?? DEFAULT_CDP} (default)`,
-    };
-  } catch { /* 没有常驻浏览器，落到自带 Chromium */ }
+  //
+  //    ⚠️ 但它有个副作用：**机器上任何开着的调试端口都会被静默接管**。
+  //    典型翻车：Windows Chrome 开着 9223（比如给网页自动化用的那只），
+  //    这时 deck_render 会连它 —— 而 Windows 浏览器读不到 WSL 的 /tmp，
+  //    于是渲染一个临时文件就报「目标浏览器在 Windows 侧，路径不在挂载盘」。
+  //    自动化/CI 里这不可接受（结果随环境漂移），所以给一个开关：
+  //    DECK_RENDER_NO_DEFAULT_CDP=1 就跳过这一步，老老实实拉一只自己的浏览器。
+  //    显式传 cdp= 仍然优先。
+  if (process.env.DECK_RENDER_NO_DEFAULT_CDP !== '1') {
+    try {
+      const info = await probeCdp(DEFAULT_CDP);
+      return {
+        mode: 'connect', endpoint: DEFAULT_CDP, owns: false,
+        browserPlatform: platformOf(uaOf(info)),
+        via: `connected ${info.Browser ?? DEFAULT_CDP} (default)`,
+      };
+    } catch { /* 没有常驻浏览器，落到自带 Chromium */ }
+  }
 
   // 本机现成的 Chrome 优先 —— Playwright 自带的那份按版本号锁定，
   // 机器上装的是别的 revision 时必然起不来（见上文说明）。

@@ -29,6 +29,9 @@ import path from 'node:path';
 
 import { apply } from '../index.js';
 
+// 同 test-render.mjs：别让环境里开着的调试端口决定测试红绿
+process.env.DECK_RENDER_NO_DEFAULT_CDP = '1';
+
 const root = mkdtempSync(path.join(os.tmpdir(), 'deck-tool-test-'));
 const fixture = path.join(root, 'deck.html');
 writeFileSync(

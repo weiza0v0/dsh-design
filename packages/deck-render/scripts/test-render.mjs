@@ -27,6 +27,14 @@ import path from 'node:path';
 
 import { renderDeck, missingBrowserError } from '../lib/render.js';
 
+/* 测试必须**不受环境里开着的调试端口影响**。
+ *
+ * 不加这一句：只要机器上有个 Chrome 开着 9223（比如给网页自动化用的那只），
+ * renderDeck 就会连它 —— 而它读不到 WSL 的 /tmp，于是每条渲染用例都报
+ * 「目标浏览器在 Windows 侧，但路径不在挂载盘」，红绿由环境决定而不是代码。
+ * 实测踩到过：一次 bcdp 会话之后整套渲染测试开始失败。 */
+process.env.DECK_RENDER_NO_DEFAULT_CDP = '1';
+
 const root = mkdtempSync(path.join(os.tmpdir(), 'deck-render-test-'));
 
 const shell = (style, body) => `<!DOCTYPE html><html><head><meta charset="utf-8"><style>

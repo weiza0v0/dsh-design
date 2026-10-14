@@ -180,9 +180,10 @@ pnpm demo                                # → examples/.render/，约 12 秒
 ## 已知限制（写清楚，不藏）
 
 - **`deck_render` 默认优先复用已在跑的调试端口。** 如果你的日常浏览器开着
-  `--remote-debugging-port=9223`，渲染会在**那个浏览器里**开标签页。
-  想无感：`bash packages/deck-render/scripts/start-headless-browser.sh 9333`，
-  然后传 `cdp="http://127.0.0.1:9333"`。
+  `--remote-debugging-port=9223`，渲染会在**那个浏览器里**开标签页；
+  在 WSL 里还会因为「Windows 浏览器读不到 /tmp」而报错。
+  **自动化/CI 一律设 `DECK_RENDER_NO_DEFAULT_CDP=1`**（跳过探测，拉自己的浏览器）；
+  想无感但复用已有实例：起 `scripts/start-headless-browser.sh 9333`，传 `cdp="http://127.0.0.1:9333"`。
 - **已在 Linux / WSL 上实测**；macOS / Windows 原生路径未经实测（代码里有分支，欢迎报 issue）。
 - **容器里渲染**要设 `DECK_RENDER_ARGS="--no-sandbox --disable-dev-shm-usage"`。
   默认**不**关沙箱 —— 那是安全降级，不该为了 CI 方便让所有人承担。
